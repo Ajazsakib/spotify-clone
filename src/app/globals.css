@@ -227,6 +227,41 @@ body {
     position: relative;
 }
 
+.main-section  .right-section .header .right .user .user-dropdown {
+    width: 200px;
+    background-color: #2a2a2a;
+    box-shadow: 0 16px 24px rgb(0 0 0 / 30%), 0 6px 8px rgb(0 0 0 / 20%);
+    border-radius: 4px;
+    position: absolute;
+    right: 0;
+    top: 40px
+}
+.main-section  .right-section .header .right .user .user-dropdown ul {
+    list-style: none;
+}
+.main-section  .right-section .header .right .user .user-dropdown ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px;
+    font-size: 14px;
+    line-height: 16px;
+}
+.main-section  .right-section .header .right .user .user-dropdown ul li:hover {
+    background-color: #3e3e3e;
+}
+.main-section  .right-section .header .right .user .user-dropdown ul li:last-child{
+    border-top: 1px solid #eaeaea;
+}
+.main-section  .right-section .header .right .user .user-dropdown ul li a{
+    color: #eaeaea;
+    text-decoration: none;
+    
+}
+.main-section  .right-section .header .right .user .user-dropdown ul li span{
+    font-size: 14px;
+    line-height: 16px;
+}
 .main-section  .right-section .header .right .user span {
     line-height: 36px;
 }

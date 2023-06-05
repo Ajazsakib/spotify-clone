@@ -1,26 +1,43 @@
 'use client';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { AppContext } from '@/contexts/AppContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/firebase/firebase';
+import Dropdown from './Dropdown';
 const Header = () => {
   const { state } = useContext(AppContext);
 
-  // const signOut = async () => {
+  const [openDropdown, setOpenDropdown] = useState(false);
 
-  // };
   const { dispatch } = useContext(AppContext);
 
   const router = useRouter();
 
+  const dropdownRef = useRef(null);
+
   const handleLogout = async () => {
     auth.signOut().then(() => {
       console.log('Logout Successfull');
-      router.push('/login');
+      // router.push('/login');
       dispatch({ type: 'IS_LOGGED_IN', payload: false });
     });
   };
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setOpenDropdown(false);
+    }
+    console.log(dropdownRef);
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  });
 
   return (
     <div className="header">
@@ -45,39 +62,18 @@ const Header = () => {
             <div className="user">
               <span
                 className="material-symbols-outlined"
-                onClick={handleLogout}
+                onClick={() => {
+                  setOpenDropdown(!openDropdown);
+                }}
               >
                 person
               </span>
-              <span>{localStorage.getItem('username')}</span>
-              <div className="user-dropdown">
-                <ul>
-                  <li>
-                    <Link href="/" className="text">
-                      Account
-                    </Link>
-                    <span className="material-symbols-outlined">
-                      open_in_new
-                    </span>
-                  </li>
-                  <li>
-                    <Link href="/" className="text">
-                      Account
-                    </Link>
-                    <span className="material-symbols-outlined">
-                      open_in_new
-                    </span>
-                  </li>
-                  <li>
-                    <Link href="/" className="text">
-                      Account
-                    </Link>
-                    <span className="material-symbols-outlined">
-                      open_in_new
-                    </span>
-                  </li>
-                </ul>
-              </div>
+              {openDropdown && (
+                <Dropdown
+                  handleLogout={handleLogout}
+                  dropdownRef={dropdownRef}
+                />
+              )}
             </div>
           </>
         ) : (

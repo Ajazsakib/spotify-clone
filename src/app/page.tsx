@@ -46,11 +46,7 @@ export default function Home() {
               state.category.map((item) => {
                 return (
                   <>
-                    <Link
-                      href={
-                        state.isLoggedIn ? `/category/${item.name}` : '/login'
-                      }
-                    >
+                    <Link href={`/category/${item.name}`}>
                       <Song key={item.id} name={item.name} />
                     </Link>
                   </>
