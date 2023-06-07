@@ -7,6 +7,15 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { AppContext } from '@/contexts/AppContext';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  addDoc,
+} from 'firebase/firestore';
+import db from '@/firebase/firebase';
 const RegistrationPage = () => {
   const { globalState, dispatch } = useContext(AppContext);
 
@@ -28,9 +37,25 @@ const RegistrationPage = () => {
   const handleSubmit = async (e) => {
     console.log(state.name, state.email, state.password);
     await createUserWithEmailAndPassword(auth, state.email, state.password);
-    console.log('Registration data submitted successfully.');
-    router.push('/');
-    dispatch({ type: 'IS_LOGGED_IN', payload: true });
+
+    const dataToSubmit = {
+      name: state.name,
+      email: state.email,
+      password: state.password,
+      isAdmin: false,
+    };
+    alert('Registration data submitted successfully.');
+    addUser(dataToSubmit);
+    // router.push('/');
+    // dispatch({ type: 'IS_LOGGED_IN', payload: true });
+  };
+
+  const addUser = async (data) => {
+    const docRef = await addDoc(collection(db, 'users'), {
+      // username: userName,
+      // item: productDetails,
+      ...data,
+    });
   };
 
   return (

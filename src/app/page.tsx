@@ -34,8 +34,12 @@ export default function Home() {
 
   useEffect(() => {
     getCategory();
+    const username = localStorage.getItem('username');
+    if (username != '') {
+      dispatch({ type: 'IS_LOGGED_IN', payload: true });
+    }
   }, []);
-  console.log(state, 'from page');
+
   return (
     <Wrapper>
       <main>

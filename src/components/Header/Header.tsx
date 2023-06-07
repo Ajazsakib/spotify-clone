@@ -16,12 +16,17 @@ const Header = () => {
 
   const dropdownRef = useRef(null);
 
+  // const handleLogout = async () => {
+  //   auth.signOut().then(() => {
+  //     console.log('Logout Successfull');
+  //     // router.push('/login');
+  //     dispatch({ type: 'IS_LOGGED_IN', payload: false });
+  //   });
+  // };
+
   const handleLogout = async () => {
-    auth.signOut().then(() => {
-      console.log('Logout Successfull');
-      // router.push('/login');
-      dispatch({ type: 'IS_LOGGED_IN', payload: false });
-    });
+    dispatch({ type: 'IS_LOGGED_IN', payload: false });
+    router.push('/login');
   };
 
   const handleClickOutside = (event) => {

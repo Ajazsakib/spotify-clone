@@ -10,6 +10,7 @@ const initialState = {
   currentSongIndex: 0,
   isPlaying: false,
   isLoggedIn: false,
+  currentUserLoggedIn: {},
 };
 
 const reducer = (state, action) => {
@@ -38,6 +39,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: action.payload,
+      };
+    case 'CURRENT_USER':
+      return {
+        ...state,
+        currentUserLoggedIn: action.payload,
       };
 
     default:

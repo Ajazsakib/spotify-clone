@@ -5,10 +5,18 @@ import { auth } from '../../firebase/firebase';
 import { useRouter } from 'next/navigation';
 import { AppContext } from '@/contexts/AppContext';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  addDoc,
+} from 'firebase/firestore';
+import db from '@/firebase/firebase';
 
 const LoginPage = () => {
   const [state, setState] = useState({
-    name: '',
     email: '',
     password: '',
   });
@@ -24,24 +32,49 @@ const LoginPage = () => {
     }));
   };
 
+  // const handleSubmit = async () => {
+  //   // console.log(state.name, state.email, state.password);
+  //   try {
+  //     const result = await signInWithEmailAndPassword(
+  //       auth,
+  //       state.email,
+  //       state.password
+  //     );
+  //     console.log(result.user.accessToken, 'from login');
+  //     if (result.user.accessToken) {
+  //       router.push('/');
+  //       dispatch({ type: 'IS_LOGGED_IN', payload: true });
+  //       var sliceUsername = state.email.replace(/@.*$/, '');
+  //       localStorage.setItem('username', sliceUsername);
+  //     }
+  //   } catch (err) {
+  //     alert('Enter Proper Email and Passeword');
+  //   }
+  // };
+
   const handleSubmit = async () => {
-    // console.log(state.name, state.email, state.password);
-    try {
-      const result = await signInWithEmailAndPassword(
-        auth,
-        state.email,
-        state.password
-      );
-      console.log(result.user.accessToken, 'from login');
-      if (result.user.accessToken) {
-        router.push('/');
+    const q = query(collection(db, 'users'), where('email', '==', state.email));
+
+    await getDocs(q).then((querySnapshot) => {
+      const user = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+
+      const userObj = user.find((item) => {
+        return item.email == state.email;
+      });
+
+      if (userObj.email == state.email) {
         dispatch({ type: 'IS_LOGGED_IN', payload: true });
-        var sliceUsername = state.email.replace(/@.*$/, '');
-        localStorage.setItem('username', sliceUsername);
+        localStorage.setItem('username', JSON.stringify(userObj));
+        if (userObj.isAdmin == true) {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
       }
-    } catch (err) {
-      alert('Enter Proper Email and Passeword');
-    }
+    });
   };
 
   const signInWithGoogle = async () => {
@@ -51,6 +84,7 @@ const LoginPage = () => {
     console.log(credential, 'from google login');
     if (credential.accessToken) {
       router.push('/');
+
       dispatch({ type: 'IS_LOGGED_IN', payload: true });
     }
   };

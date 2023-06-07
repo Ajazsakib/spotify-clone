@@ -1,9 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
+import { json } from 'stream/consumers';
 const Dropdown = ({ handleLogout, dropdownRef }) => {
+  const username = localStorage.getItem('username');
+
+  const userObject = JSON.parse(username);
+
   return (
     <div className="user-dropdown" ref={dropdownRef}>
-      <span>{localStorage.getItem('username')}</span>
+      <span>{userObject.name}</span>
       <ul>
         <li>
           <Link href="/" className="text">
