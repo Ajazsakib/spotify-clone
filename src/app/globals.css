@@ -586,6 +586,7 @@ body {
     display: flex;
     flex-direction: column;
     text-align: left;
+    margin-bottom: 16px;
 }
 .register-page  .form .form-group label {
     margin-bottom: 6px;
@@ -593,11 +594,16 @@ body {
 .register-page  .form .form-group input {
     height: 50px;
     padding-left: 16px;
-    margin-bottom: 16px;
+    
 }
-.register-page  .form .form-group input.btn {
+.register-page  .form .form-group p {
+    
+    color: #c20302
+}
+.register-page  .form .form-group .btn {
     display: flex;
     justify-content: center;
     font-size: 16px;
+    height: 50px;
 }
 /* End css for register page*/

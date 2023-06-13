@@ -25,7 +25,9 @@ const Header = () => {
   // };
 
   const handleLogout = async () => {
+    localStorage.setItem('username', '');
     dispatch({ type: 'IS_LOGGED_IN', payload: false });
+
     router.push('/login');
   };
 

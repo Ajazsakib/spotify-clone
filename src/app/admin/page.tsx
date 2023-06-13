@@ -1,96 +1,63 @@
 'use client';
-import React, { useState, useContext, useEffect } from 'react';
-import './admin.css';
+import React, { useEffect, useContext, useState } from 'react';
 import { AppContext } from '@/contexts/AppContext';
+import { useRouter } from 'next/navigation';
+import Header from './Header';
+import './admin.css';
 import {
   collection,
   query,
   where,
   getDocs,
   doc,
-  addDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import db from '@/firebase/firebase';
-import { useRouter } from 'next/navigation';
-import { app } from '@/firebase/firebase';
-import { storage } from '@/firebase/firebase';
-import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
+import Link from 'next/link';
+const songsList = () => {
+  const { dispatch } = useContext(AppContext);
 
-const AdminPage = () => {
-  const { state, dispatch } = useContext(AppContext);
-
-  const [adminFormstate, setAdminFormState] = useState({
-    artist: '',
-    category: '',
-    title: '',
-    songUrl: '',
-  });
-
-  const [file, setFile] = useState(null);
-  const [imgUrl, setImgUrl] = useState(null);
-  const [progresspercent, setProgresspercent] = useState(0);
+  const [songs, setSongs] = useState([]);
 
   const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const songsRef = collection(db, 'songs');
 
-  const handleChange = (e) => {
-    setAdminFormState((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-  console.log(file);
-  useEffect(() => {
-    if (file) {
-      const storageRef = ref(storage, `files/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setProgresspercent(progress);
-        },
-        (error) => {
-          alert(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImgUrl(downloadURL);
-          });
-        }
-      );
-    }
-  }, [file]);
-  console.log(imgUrl);
-  const songsCategoryRef = collection(db, 'category');
-
-  const getCategory = async () => {
-    const data = await getDocs(songsCategoryRef);
+  const getSongs = async () => {
+    const data = await getDocs(songsRef);
     const filteredData = data.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
     }));
-    dispatch({ type: 'FETCH_CATEGORY', payload: filteredData });
+    setSongs(filteredData);
+  };
+
+  const deleteSong = async (id) => {
+    const docRef = doc(db, 'songs', id);
+    deleteDoc(docRef)
+      .then(() => {
+        console.log('Entire Document has been deleted successfully.');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    getSongs();
   };
 
   useEffect(() => {
-    getCategory();
-    // if (!state.isLoggedIn) {
-    //   router.push('/login');
-    // }
+    getSongs();
     const username = localStorage.getItem('username');
-    const userObject = JSON.parse(username);
 
-    if (userObject.name != '' && userObject.isAdmin == true) {
-      dispatch({ type: 'IS_LOGGED_IN', payload: true });
+    if (username) {
+      const userObject = JSON.parse(username);
+      if (userObject.name != '' && userObject.isAdmin == true) {
+        dispatch({ type: 'IS_LOGGED_IN', payload: true });
+      } else {
+        dispatch({ type: 'IS_LOGGED_IN', payload: false });
+
+        router.push('/login');
+      }
     } else {
       dispatch({ type: 'IS_LOGGED_IN', payload: false });
 
@@ -98,96 +65,37 @@ const AdminPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const getSingleCategory = state?.category.find((item) => {
-      return item.name == adminFormstate.category;
-    });
-    setSelectedCategory(getSingleCategory);
-  }, [adminFormstate.category]);
-
-  const handleSubmit = () => {
-    var dataToSubmit = {
-      artist: adminFormstate.artist,
-      category_id: selectedCategory?.id,
-      title: adminFormstate.title,
-      src: imgUrl,
-    };
-
-    addSong(dataToSubmit);
-  };
-
-  const addSong = async (data) => {
-    const docRef = await addDoc(collection(db, 'songs'), {
-      // username: userName,
-      // item: productDetails,
-      ...data,
-      created_by: 'Saquib',
-    });
-    alert('Data has been Submitted Succesfully');
-  };
-
-  const handleLogout = () => {
-    dispatch({ type: 'IS_LOGGED_IN', payload: false });
-    localStorage.setItem('username', '');
-    router.push('/login');
-  };
-
   return (
-    <div className="admin-panel-form-wrap">
-      <h1>Admin Panel</h1>
-      <button onClick={handleLogout}>LOGOUT</button>
-      <div className="admin-panel-form">
-        <div className="form-group">
-          <label>Artist</label>
-          <input
-            type="text"
-            className="form-control"
-            name="artist"
-            onChange={handleChange}
-          />
+    <>
+      <Header />
+      <div className="songs-wraper">
+        <h2>Songs List</h2>
+        <div className="add-song">
+          <Link href="/admin/addSong">
+            <button className="btn btn-secondary">Add Songs</button>
+          </Link>
         </div>
-        <div className="form-group">
-          <label>category</label>
-          <select name="category" onChange={handleChange}>
-            <option>Select category</option>
-            {state.category.map((item) => {
+        <div className="songs">
+          {songs &&
+            songs.map((song) => {
               return (
-                <>
-                  <option id={item.id}>{item.name}</option>
-                </>
+                <div className="song-box" key={song.id}>
+                  <p>{song.title}</p>
+                  <span
+                    className="material-symbols-outlined"
+                    onClick={() => {
+                      deleteSong(song.id);
+                    }}
+                  >
+                    delete
+                  </span>
+                </div>
               );
             })}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Title</label>
-          <input
-            type="text"
-            className="form-control"
-            name="title"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>Song URL</label>
-          <input
-            type="file"
-            className="form-control"
-            name="songUrl"
-            onChange={handleFileChange}
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="submit"
-            className="btn btn-secondary"
-            value="Submit"
-            onClick={handleSubmit}
-          />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default AdminPage;
+export default songsList;

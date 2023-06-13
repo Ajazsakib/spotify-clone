@@ -27,3 +27,114 @@
 .btn-secondary{ 
     justify-content: center;
 }
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #181818;
+    padding: 0 50px;
+    height: 70px;
+}
+.admin-header .left {
+    color: #ffffff;
+}
+.admin-header .right {
+    display: flex;
+}
+.admin-header .right .form-control {
+    height: 36px;
+    padding-left: 16px;
+    color: #333333;
+}
+.admin-header .right .form-control::placeholder {
+    color: #999999
+}
+.admin-header .right .form-control:focus {
+    outline: 0;
+}
+.admin-header .right .img {
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+    margin-left: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.admin-header .right .img img {
+    width: 100%;
+    height: 100%;
+}
+
+.admin-header .right .user-profile {
+    position: relative;
+}
+.admin-header .right .user-profile .user-dropdown {
+    width: 200px;
+    background-color: #2a2a2a;
+    box-shadow: 0 16px 24px rgb(0 0 0 / 30%), 0 6px 8px rgb(0 0 0 / 20%);
+    border-radius: 4px;
+    position: absolute;
+    right: -16px;
+    top: 50px;
+    text-align: center;
+}
+.admin-header .right .user-profile .user-dropdown > span {
+    color: #ffffff;
+    line-height: 36px;
+}
+.admin-header .right .user-profile .user-dropdown ul {
+    list-style: none;
+}
+.admin-header .right .user-profile .user-dropdown ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px;
+    font-size: 14px;
+    line-height: 16px;
+    cursor: pointer;
+}
+.admin-header .right .user-profile .user-dropdown ul li:hover {
+    background-color: #3e3e3e;
+}
+.admin-header .right .user-profile .user-dropdown ul li a {
+    color: #eaeaea;
+    text-decoration: none;
+}
+.admin-header .right .user-profile .user-dropdown ul li:last-child {
+    border-top: 1px solid #eaeaea;
+}
+
+.songs-wraper {
+    width: 60%;
+    margin: 50px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.songs-wraper h2 {
+    margin-bottom: 30px;
+}
+.songs-wraper .songs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.songs-wraper .songs .song-box {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background-color: #dddddd;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    cursor: pointer;
+}
+.add-song{
+    position: absolute;
+    right: 0;
+}

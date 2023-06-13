@@ -6,8 +6,11 @@ import { AppContext } from '@/contexts/AppContext';
 
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import db from '../../firebase/firebase';
+import { useRouter } from 'next/navigation';
 
 const Player = () => {
+  const router = useRouter();
+
   const { state, dispatch } = useContext(AppContext);
   const { songs, currentSongIndex, isPlaying } = state;
 
@@ -266,7 +269,13 @@ const Player = () => {
       <div className="player">
         <div className="left">
           <div className="img">
-            <img src="images/song.jpg" />
+            <img
+              src={
+                router.pathname == '/'
+                  ? `images/song.jpg`
+                  : `../images/song.jpg`
+              }
+            />
           </div>
           <div className="text">
             <p className="song-title">{currentSong.title} </p>

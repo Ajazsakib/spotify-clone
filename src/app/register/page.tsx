@@ -16,6 +16,8 @@ import {
   addDoc,
 } from 'firebase/firestore';
 import db from '@/firebase/firebase';
+import Link from 'next/link';
+import validationSchema from './formValidationSchema';
 const RegistrationPage = () => {
   const { globalState, dispatch } = useContext(AppContext);
 
@@ -25,6 +27,7 @@ const RegistrationPage = () => {
     password: '',
   });
 
+  const [errorMessage, setErrorMessage] = useState(null);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -36,15 +39,31 @@ const RegistrationPage = () => {
 
   const handleSubmit = async (e) => {
     console.log(state.name, state.email, state.password);
-    await createUserWithEmailAndPassword(auth, state.email, state.password);
+    // await createUserWithEmailAndPassword(auth, state.email, state.password);
 
+    // Form Validation Code
+    try {
+      await validationSchema.validate(state, { abortEarly: false });
+      // Validation passed, continue with form submission
+      console.log('Form submitted successfully!', state);
+      alert('Form submitted successfully!');
+    } catch (errors) {
+      // Validation failed, handle the errors
+      const errorMessages = {};
+      errors.inner.forEach((error) => {
+        errorMessages[error.path] = error.message;
+      });
+      setErrorMessage(errorMessages);
+      console.log('Form validation errors:', errorMessages);
+    }
+    // Data to submit in databse
     const dataToSubmit = {
       name: state.name,
       email: state.email,
       password: state.password,
       isAdmin: false,
     };
-    alert('Registration data submitted successfully.');
+
     addUser(dataToSubmit);
     // router.push('/');
     // dispatch({ type: 'IS_LOGGED_IN', payload: true });
@@ -76,18 +95,24 @@ const RegistrationPage = () => {
             <input
               type="text"
               className="form-control"
+              autoComplete="off"
               name="name"
+              value={state.name}
               onChange={handleChange}
             />
+            {errorMessage?.name && <p>{errorMessage.name}</p>}
           </div>
           <div className="form-group">
             <label>Email</label>
             <input
               type="text"
               className="form-control"
+              autoComplete="off"
               name="email"
+              value={state.email}
               onChange={handleChange}
             />
+            {errorMessage?.email && <p>{errorMessage.email}</p>}
           </div>
           <div className="form-group">
             <label>password</label>
@@ -95,15 +120,24 @@ const RegistrationPage = () => {
               type="password"
               className="form-control"
               name="password"
+              value={state.password}
               onChange={handleChange}
             />
+            {errorMessage?.password && <p>{errorMessage.password}</p>}
           </div>
           <div className="form-group">
             <input
               type="submit"
               className="btn btn-secondary"
-              onClick={handleSubmit}
+              onClick={() => {
+                handleSubmit(state);
+              }}
             />
+          </div>
+          <div className="form-group">
+            <Link href="/login" className="btn btn-secondary">
+              Log In
+            </Link>
           </div>
         </div>
       </div>
