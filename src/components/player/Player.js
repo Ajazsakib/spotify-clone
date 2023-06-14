@@ -7,7 +7,7 @@ import { AppContext } from '@/contexts/AppContext';
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import db from '../../firebase/firebase';
 import { useRouter } from 'next/navigation';
-
+import CurrentSong from './CurrentSong';
 const Player = () => {
   const router = useRouter();
 
@@ -267,25 +267,7 @@ const Player = () => {
   return (
     currentSong && (
       <div className="player">
-        <div className="left">
-          <div className="img">
-            <img
-              src={
-                router.pathname == '/'
-                  ? `images/song.jpg`
-                  : `../images/song.jpg`
-              }
-            />
-          </div>
-          <div className="text">
-            <p className="song-title">{currentSong.title} </p>
-            <p className="song-artist">{currentSong.artist}</p>
-          </div>
-          <div className="icons">
-            <span className="material-symbols-outlined">favorite</span>
-            <span className="material-symbols-outlined">panorama</span>
-          </div>
-        </div>
+        <CurrentSong currentSong={currentSong} />
         <div className="middle">
           <div className="icons">
             <span className="material-symbols-outlined">shuffle</span>

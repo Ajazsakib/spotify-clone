@@ -130,6 +130,7 @@ const AdminPage = () => {
       };
 
       addSong(dataToSubmit);
+      router.push('/admin');
     } catch (errors) {
       // Validation failed, handle the errors
       const errorMessages = {};

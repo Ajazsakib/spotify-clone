@@ -50,7 +50,12 @@ const Header = () => {
     <div className="header">
       <div className="left">
         <a>
-          <span className="material-symbols-outlined">arrow_back_ios</span>
+          <span
+            className="material-symbols-outlined"
+            onClick={() => router.back()}
+          >
+            arrow_back_ios
+          </span>
         </a>
         <a>
           <span className="material-symbols-outlined">arrow_forward_ios</span>

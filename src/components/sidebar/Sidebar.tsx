@@ -1,6 +1,6 @@
 import React from 'react';
 import LibraryBox from './LibraryBox';
-
+import Link from 'next/link';
 const Sidebar = () => {
   return (
     <div className="sidebar">
@@ -9,7 +9,9 @@ const Sidebar = () => {
           <div className="icon">
             <span className="material-symbols-outlined">home</span>
           </div>
-          <div className="menu">Home</div>
+          <div className="menu">
+            <Link href="/">Home</Link>
+          </div>
         </div>
         <div className="top-content">
           <div className="icon">
