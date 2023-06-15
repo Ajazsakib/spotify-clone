@@ -85,7 +85,7 @@ const index = ({ params }) => {
               <tbody>
                 {state.songs.map((item, index) => {
                   return (
-                    <tr>
+                    <tr key={item.id}>
                       <td>
                         <span
                           className="material-symbols-outlined"

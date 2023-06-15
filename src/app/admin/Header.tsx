@@ -1,6 +1,7 @@
 import { AppContext } from '@/contexts/AppContext';
 import React, { useState, useRef, useContext, useEffect } from 'react';
-import Dropdown from './Dropdown';
+// import Dropdown from './Dropdown';
+import Dropdown from '@/components/Header/Dropdown';
 import { useRouter } from 'next/navigation';
 const Header = () => {
   const [openDropdown, setOpenDropdown] = useState(false);

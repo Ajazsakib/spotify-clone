@@ -8,6 +8,8 @@ import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import db from '../../firebase/firebase';
 import { useRouter } from 'next/navigation';
 import CurrentSong from './CurrentSong';
+import SongRangeSlider from './SongRangeSlider';
+import VolumeRangeSlider from './VolumeRangeSlider';
 const Player = () => {
   const router = useRouter();
 
@@ -49,6 +51,8 @@ const Player = () => {
   const rangeRef = useRef();
 
   const volumeRangeRef = useRef();
+
+  const [targetRefEle, setTargetRefEle] = useState(null);
 
   // const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -102,17 +106,6 @@ const Player = () => {
     };
   }, [isMouseDown]);
 
-  // function to change the   volume range on mousemove
-
-  useEffect(() => {
-    window.addEventListener('mousemove', handleVolumeMouseMove);
-    window.addEventListener('mouseup', handleVolumeMouseUp);
-    return () => {
-      window.removeEventListener('mousemove', handleVolumeMouseMove);
-      window.removeEventListener('mouseup', handleVolumeMouseUp);
-    };
-  }, [isVolumeDown]);
-
   useEffect(() => {
     if (currentSong) {
       audioRef.current.volume = 0.1;
@@ -137,24 +130,34 @@ const Player = () => {
 
   // control songs progress bar width on mouse down
   const handleMouseDown = (e) => {
-    const progressSongBar = e.target;
-
-    const progressSongPosition = e.pageX - progressSongBar.offsetLeft;
-
-    var progressSongWidth;
-
-    if (progressSongBar.classList.contains('range-bar')) {
-      progressSongWidth = progressSongBar.offsetWidth;
+    var targetRef;
+    var progressWidth;
+    const progressBar = e.target;
+    const progressPosition = e.pageX - progressBar.offsetLeft;
+    if (
+      progressBar.classList.contains('songParent') ||
+      progressBar.classList.contains('songChild')
+    ) {
+      targetRef = rangeRef;
     } else {
-      progressSongWidth = progressSongBar.parentElement.offsetWidth;
+      targetRef = volumeRangeRef;
     }
-
-    const progressPercent = (progressSongPosition / progressSongWidth) * 100;
-
-    // setProgresSong(progressPercent);
-
-    audioRef.current.currentTime = (duration * progressPercent) / 100;
-
+    setTargetRefEle(targetRef);
+    if (
+      progressBar.classList.contains('songParent') ||
+      progressBar.classList.contains('volumeParent')
+    ) {
+      progressWidth = progressBar.offsetWidth;
+    } else {
+      progressWidth = progressBar.parentElement.offsetWidth;
+    }
+    const progressPercent = (progressPosition / progressWidth) * 100;
+    if (targetRef == rangeRef) {
+      audioRef.current.currentTime = (duration * progressPercent) / 100;
+    } else {
+      audioRef.current.volume = progressPercent / 100;
+      targetRef.current.style.width = `${progressPercent}%`;
+    }
     setIsMouseDown(true);
   };
 
@@ -167,18 +170,23 @@ const Player = () => {
 
   const handleMouseMove = (e) => {
     if (isMouseDown) {
-      const p = e.pageX - rangeRef.current.parentElement.offsetLeft;
+      console.log(targetRefEle);
+      const p = e.pageX - targetRefEle.current.parentElement.offsetLeft;
 
-      const q = rangeRef.current.parentElement.offsetWidth;
+      const q = targetRefEle.current.parentElement.offsetWidth;
 
       const r = (p / q) * 100;
 
-      audioRef.current.currentTime = (p / q) * audioRef.current.duration;
+      if (targetRefEle == rangeRef) {
+        audioRef.current.currentTime = (p / q) * audioRef.current.duration;
+        targetRefEle.current.style.width = `${r}%
+    `;
+      } else {
+        targetRefEle.current.style.width = `${r}%`;
+        audioRef.current.volume = r / 100;
+      }
 
       // setProgresSong(r);
-
-      rangeRef.current.style.width = `${r}%
-    `;
     }
   };
 
@@ -192,46 +200,6 @@ const Player = () => {
       volumeRangeRef.current.style.width = '0';
     } else {
       volumeRangeRef.current.style.width = `50%`;
-    }
-  };
-  // control volume on mousedown
-  const handleVolumeMouseDown = (e) => {
-    const volumeBarPos = e.pageX - e.target.offsetLeft;
-
-    var volumeBarWidth;
-    if (e.target.classList.contains('sound-progress-bar')) {
-      volumeBarWidth = e.target.offsetWidth;
-    } else {
-      volumeBarWidth = e.target.parentElement.offsetWidth;
-    }
-
-    var volumePercent = (volumeBarPos / volumeBarWidth) * 100;
-
-    if (volumePercent > 100) {
-      volumePercent = 100;
-    }
-
-    audioRef.current.volume = volumePercent / 100;
-
-    volumeRangeRef.current.style.width = `${volumePercent}%`;
-
-    setIsVolumeDown(true);
-  };
-
-  const handleVolumeMouseUp = () => {
-    setIsVolumeDown(false);
-  };
-  // control volume on mousemove
-  const handleVolumeMouseMove = (e) => {
-    if (isVolumeDown) {
-      const p = e.pageX - volumeRangeRef.current.parentElement.offsetLeft;
-      const q = volumeRangeRef.current.parentElement.offsetWidth;
-
-      const r = (p / q) * 100;
-
-      volumeRangeRef.current.style.width = `${r}%`;
-
-      audioRef.current.volume = r / 100;
     }
   };
 
@@ -268,73 +236,27 @@ const Player = () => {
     currentSong && (
       <div className="player">
         <CurrentSong currentSong={currentSong} />
-        <div className="middle">
-          <div className="icons">
-            <span className="material-symbols-outlined">shuffle</span>
-            <span
-              className="material-symbols-outlined"
-              onClick={backwardLastSong}
-            >
-              skip_previous
-            </span>
-            <span
-              className="material-symbols-outlined"
-              onClick={togglePlayPause}
-            >
-              {isPlaying ? 'pause' : 'play_arrow'}
-            </span>
-            <span
-              className="material-symbols-outlined"
-              onClick={forwardNextSong}
-            >
-              skip_next
-            </span>
-            <span className="material-symbols-outlined">repeat</span>
-          </div>
-          <div className="audio">
-            <audio
-              key={currentSong.id}
-              ref={audioRef}
-              onDurationChange={(e) => {
-                setDuration(e.currentTarget.duration);
-              }}
-              onTimeUpdate={(e) => {
-                setCurrrentProgress(e.currentTarget.currentTime);
-                progressBarWidth();
-              }}
-            >
-              <source src={currentSong.src} type="audio/mpeg" />
-            </audio>
-          </div>
-          <div className="song-range">
-            <div className="current-time-song">{elapsedDisplay}</div>
-            <div className="range-bar" onMouseDown={handleMouseDown}>
-              <div className="range" ref={rangeRef}></div>
-            </div>
-            <div className="left-song">{durationDisplay}</div>
-          </div>
-        </div>
-        <div className="right">
-          <div className="icons">
-            <span className="material-symbols-outlined">segment</span>
-            <span className="material-symbols-outlined">
-              keyboard_previous_language
-            </span>
-          </div>
-          <div className="sound-bar">
-            <div className="icon" onClick={toggleVolume}>
-              <span className="material-symbols-outlined">
-                {isVolumeOn ? 'volume_up' : 'volume_off'}
-              </span>
-            </div>
-            <div
-              className="sound-progress-bar"
-              onMouseDown={handleVolumeMouseDown}
-            >
-              <div className="range-bar" ref={volumeRangeRef}></div>
-            </div>
-          </div>
-        </div>
+        <SongRangeSlider
+          backwardLastSong={backwardLastSong}
+          togglePlayPause={togglePlayPause}
+          isPlaying={isPlaying}
+          forwardNextSong={forwardNextSong}
+          currentSong={currentSong}
+          audioRef={audioRef}
+          setDuration={setDuration}
+          setCurrrentProgress={setCurrrentProgress}
+          progressBarWidth={progressBarWidth}
+          elapsedDisplay={elapsedDisplay}
+          handleMouseDown={handleMouseDown}
+          rangeRef={rangeRef}
+          durationDisplay={durationDisplay}
+        />
+        <VolumeRangeSlider
+          toggleVolume={toggleVolume}
+          isVolumeOn={isVolumeOn}
+          volumeRangeRef={volumeRangeRef}
+          handleMouseDown={handleMouseDown}
+        />
       </div>
     )
   );
