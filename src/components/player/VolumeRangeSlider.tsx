@@ -1,13 +1,9 @@
 import React from 'react';
 
 const VolumeRangeSlider = (props) => {
-  const {
-    toggleVolume,
-    isVolumeOn,
-    handleVolumeMouseDown,
-    volumeRangeRef,
-    handleMouseDown,
-  } = props;
+  const { toggleVolume, isVolumeOn, volumeRangeRef, handleMouseDown } = props;
+
+  console.log('volume Render');
 
   return (
     <div className="right">
@@ -34,4 +30,4 @@ const VolumeRangeSlider = (props) => {
   );
 };
 
-export default VolumeRangeSlider;
+export default React.memo(VolumeRangeSlider);

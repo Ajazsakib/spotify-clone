@@ -14,35 +14,49 @@ import {
 } from 'firebase/firestore';
 import db from '@/firebase/firebase';
 import Link from 'next/link';
+
 const songsList = () => {
   const { dispatch } = useContext(AppContext);
 
-  const [songs, setSongs] = useState([]);
+  const [songs, setSongs] = useState<FilteredData[]>([]);
 
   const router = useRouter();
 
   const songsRef = collection(db, 'songs');
 
+  interface FilteredData {
+    [key: string]: string | undefined;
+    artist?: string;
+    category_id?: string;
+    created_by?: string;
+    id?: string;
+    src?: string;
+    title?: string;
+  }
+
   const getSongs = async () => {
     const data = await getDocs(songsRef);
-    const filteredData = data.docs.map((doc) => ({
+    const filteredData: FilteredData[] = data.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
     }));
+    console.log(filteredData);
     setSongs(filteredData);
   };
 
-  const deleteSong = async (id) => {
-    const docRef = doc(db, 'songs', id);
-    deleteDoc(docRef)
-      .then(() => {
-        console.log('Entire Document has been deleted successfully.');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const deleteSong = async (id: string | undefined) => {
+    if (id !== undefined) {
+      const docRef = doc(db, 'songs', id);
+      deleteDoc(docRef)
+        .then(() => {
+          console.log('Entire Document has been deleted successfully.');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    getSongs();
+      getSongs();
+    }
   };
 
   useEffect(() => {

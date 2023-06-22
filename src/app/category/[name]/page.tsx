@@ -12,14 +12,19 @@ import {
 import db from '@/firebase/firebase';
 import { AppContext } from '../../../contexts/AppContext';
 import Wrapper from '@/components/wrapper/Wrapper';
-const index = ({ params }) => {
+
+interface Iprops {
+  params: { name: string };
+}
+
+const index = ({ params }: Iprops) => {
   const { state, dispatch } = useContext(AppContext);
   const { category, currentSongIndex, isPlaying } = state;
-
+  console.log(category);
   var songsCategoryRef = collection(db, 'category');
 
   const getCategoryData = async () => {
-    const categoryId = category.find((item) => {
+    const categoryId = category.find((item: { name: string; id: string }) => {
       return item.name == params.name;
     });
 
@@ -43,7 +48,7 @@ const index = ({ params }) => {
     getCategoryData();
   }, []);
 
-  const selectedSong = (index) => {
+  const selectedSong = (index: number) => {
     dispatch({
       type: 'PLAY_SONG',
       payload: index,

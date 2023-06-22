@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AppContext } from '@/contexts/AppContext';
-const SongRangeSlider = (props) => {
+import { useMemo } from 'react';
+import { IProps } from './playerIProps';
+
+const SongRangeSlider = (props: IProps) => {
   const { state, dispatch } = useContext(AppContext);
   const { songs, currentSongIndex, isPlaying } = state;
 

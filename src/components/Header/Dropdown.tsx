@@ -1,8 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { json } from 'stream/consumers';
-const Dropdown = ({ handleLogout, dropdownRef }) => {
-  const username = localStorage.getItem('username');
+interface IProps {
+  handleLogout: () => void;
+  dropdownRef: React.RefObject<HTMLDivElement>;
+}
+const Dropdown = ({ handleLogout, dropdownRef }: IProps) => {
+  const username: string = localStorage.getItem('username') || 'Dummy';
 
   const userObject = JSON.parse(username);
 

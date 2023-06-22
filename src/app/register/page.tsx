@@ -27,17 +27,27 @@ const RegistrationPage = () => {
     password: '',
   });
 
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<{
+    [key: string]: string | undefined;
+    name?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+  }>({});
   const router = useRouter();
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     setState((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  interface Error {
+    path: string;
+    message: string;
+  }
+
+  const handleSubmit = async () => {
     console.log(state.name, state.email, state.password);
     // await createUserWithEmailAndPassword(auth, state.email, state.password);
 
@@ -47,10 +57,16 @@ const RegistrationPage = () => {
       // Validation passed, continue with form submission
       console.log('Form submitted successfully!', state);
       alert('Form submitted successfully!');
-    } catch (errors) {
+    } catch (errors: any) {
       // Validation failed, handle the errors
-      const errorMessages = {};
-      errors.inner.forEach((error) => {
+      console.log(errors);
+      const errorMessages: {
+        name?: string;
+        email?: string;
+        password?: string;
+        [key: string]: string | undefined;
+      } = {};
+      errors.inner.forEach((error: Error) => {
         errorMessages[error.path] = error.message;
       });
       setErrorMessage(errorMessages);
@@ -69,7 +85,12 @@ const RegistrationPage = () => {
     // dispatch({ type: 'IS_LOGGED_IN', payload: true });
   };
 
-  const addUser = async (data) => {
+  const addUser = async (data: {
+    name: string;
+    email: string;
+    password: string;
+    isAdmin: boolean;
+  }) => {
     const docRef = await addDoc(collection(db, 'users'), {
       // username: userName,
       // item: productDetails,

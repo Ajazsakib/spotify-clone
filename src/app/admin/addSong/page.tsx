@@ -29,29 +29,35 @@ const AdminPage = () => {
     songUrl: '',
   });
 
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>({});
 
-  const [file, setFile] = useState(null);
-  const [imgUrl, setImgUrl] = useState(null);
+  const [file, setFile] = useState<any>(null);
+  const [imgUrl, setImgUrl] = useState<string>('');
   const [progresspercent, setProgresspercent] = useState(0);
 
   const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<{
+    name: string;
+    id: string;
+  }>({ name: '', id: '' });
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: string; value: string } }) => {
     setAdminFormState((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange: any = (e: {
+    target: { files: React.SetStateAction<null>[] };
+  }) => {
     setFile(e.target.files[0]);
   };
 
   useEffect(() => {
     if (file) {
+      console.log(file, '>>>>>>>>>>>>>>>');
       const storageRef = ref(storage, `files/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -67,9 +73,11 @@ const AdminPage = () => {
           alert(error);
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImgUrl(downloadURL);
-          });
+          getDownloadURL(uploadTask.snapshot.ref).then(
+            (downloadURL: string) => {
+              setImgUrl(downloadURL);
+            }
+          );
         }
       );
     }
@@ -111,30 +119,44 @@ const AdminPage = () => {
   }, []);
 
   useEffect(() => {
-    const getSingleCategory = state?.category.find((item) => {
-      return item.name == adminFormstate.category;
-    });
+    console.log(state.category);
+    const getSingleCategory: { name: string; id: string } =
+      state?.category.find((item: { name: string }) => {
+        return item.name == adminFormstate.category;
+      });
     setSelectedCategory(getSingleCategory);
   }, [adminFormstate.category]);
 
+  interface DataToSubmit {
+    artist: string;
+    category_id: number | string;
+    title: string;
+    src: string | null;
+  }
+  interface ErrorMessage {
+    name?: string;
+    email?: string;
+    password?: string;
+    [key: string]: string | undefined;
+  }
   const handleSubmit = async () => {
     try {
       await validationSchema.validate(adminFormstate, { abortEarly: false });
       // Validation passed, continue with form submission
       console.log('Form submitted successfully!', adminFormstate);
-      var dataToSubmit = {
+      var dataToSubmit: DataToSubmit = {
         artist: adminFormstate.artist,
-        category_id: selectedCategory?.id,
+        category_id: selectedCategory.id,
         title: adminFormstate.title,
         src: imgUrl,
       };
 
       addSong(dataToSubmit);
       router.push('/admin');
-    } catch (errors) {
+    } catch (errors: any) {
       // Validation failed, handle the errors
-      const errorMessages = {};
-      errors.inner.forEach((error) => {
+      const errorMessages: ErrorMessage = {};
+      errors.inner.forEach((error: { path: string | number; message: any }) => {
         errorMessages[error.path] = error.message;
       });
       setErrorMessage(errorMessages);
@@ -142,7 +164,7 @@ const AdminPage = () => {
     }
   };
 
-  const addSong = async (data) => {
+  const addSong = async (data: DataToSubmit) => {
     const docRef = await addDoc(collection(db, 'songs'), {
       // username: userName,
       // item: productDetails,
@@ -151,6 +173,8 @@ const AdminPage = () => {
     });
     alert('Data has been Submitted Succesfully');
   };
+
+  console.log(state.category);
 
   return (
     <>
@@ -173,7 +197,7 @@ const AdminPage = () => {
             <label>category</label>
             <select name="category" onChange={handleChange}>
               <option>Select category</option>
-              {state.category.map((item) => {
+              {state.category.map((item: { name: string; id: string }) => {
                 return (
                   <>
                     <option id={item.id}>{item.name}</option>
@@ -199,7 +223,9 @@ const AdminPage = () => {
               type="file"
               className="form-control"
               name="songUrl"
-              onChange={handleFileChange}
+              onChange={(e) => {
+                handleFileChange(e);
+              }}
             />
             {errorMessage?.songUrl && <p>{errorMessage.songUrl}</p>}
           </div>

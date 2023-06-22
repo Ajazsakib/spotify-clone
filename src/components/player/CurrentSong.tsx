@@ -1,16 +1,26 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-const CurrentSong = ({ currentSong }) => {
+interface IProps {
+  currentSong: {
+    artist: string;
+    category_id: string;
+    created_by: string;
+    id: string;
+    src: string;
+    title: string;
+  };
+}
+
+const CurrentSong = ({ currentSong }: IProps) => {
   const router = useRouter();
+
+  console.log('currentSong');
+
   return (
     <div className="left">
       <div className="img">
-        <img
-          src={
-            router.pathname == '/' ? `images/song.jpg` : `../images/song.jpg`
-          }
-        />
+        <img src={`../images/song.jpg`} />
       </div>
       <div className="text">
         <p className="song-title">{currentSong.title} </p>
@@ -24,4 +34,4 @@ const CurrentSong = ({ currentSong }) => {
   );
 };
 
-export default CurrentSong;
+export default React.memo(CurrentSong);

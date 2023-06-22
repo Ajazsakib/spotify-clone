@@ -5,7 +5,7 @@ import Dropdown from '@/components/Header/Dropdown';
 import { useRouter } from 'next/navigation';
 const Header = () => {
   const [openDropdown, setOpenDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef: React.RefObject<HTMLDivElement> = useRef(null);
   const { dispatch } = useContext(AppContext);
   const router = useRouter();
 
@@ -16,7 +16,7 @@ const Header = () => {
     router.push('/login');
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: { target: any }) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setOpenDropdown(false);
     }

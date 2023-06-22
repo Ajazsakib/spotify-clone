@@ -22,13 +22,18 @@ const LoginPage = () => {
     password: '',
   });
 
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<{
+    [key: string]: string | undefined;
+
+    email?: string | undefined;
+    password?: string | undefined;
+  }>({});
 
   const { dispatch } = useContext(AppContext);
 
   const router = useRouter();
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: string; value: string } }) => {
     setState((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
@@ -55,6 +60,15 @@ const LoginPage = () => {
   //   }
   // };
 
+  interface User {
+    email?: string;
+    id?: string;
+    isAdmin?: boolean;
+    name?: string;
+    password?: string;
+    [key: string]: string | boolean | undefined;
+  }
+
   const handleSubmit = async () => {
     // login for validation
     try {
@@ -73,9 +87,12 @@ const LoginPage = () => {
           id: doc.id,
         }));
 
-        const userObj = user.find((item) => {
-          return item.email == state.email;
-        });
+        const userObj: User =
+          user.find((item: User) => {
+            return item.email == state.email;
+          }) || {};
+
+        console.log(userObj);
 
         if (userObj.email == state.email) {
           dispatch({ type: 'IS_LOGGED_IN', payload: true });
@@ -87,12 +104,18 @@ const LoginPage = () => {
           }
         }
       });
-    } catch (errors) {
+    } catch (errors: any) {
       // Validation failed, handle the errors
-      const errorMessages = {};
-      errors.inner.forEach((error) => {
-        errorMessages[error.path] = error.message;
-      });
+      const errorMessages: {
+        email?: string;
+        password?: string;
+        [key: string]: string | undefined;
+      } = {};
+      errors.inner.forEach(
+        (error: { path: string | number; message: string }) => {
+          errorMessages[error.path] = error.message;
+        }
+      );
       setErrorMessage(errorMessages);
       console.log('Form validation errors:', errorMessages);
     }
@@ -101,7 +124,7 @@ const LoginPage = () => {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const res = await signInWithPopup(auth, provider);
-    const credential = GoogleAuthProvider.credentialFromResult(res);
+    const credential: any = GoogleAuthProvider.credentialFromResult(res);
     console.log(credential, 'from google login');
     if (credential.accessToken) {
       router.push('/');

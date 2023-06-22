@@ -40,6 +40,11 @@ export default function Home() {
     }
   }, []);
 
+  interface Item {
+    name: string;
+    id: number;
+  }
+
   return (
     <Wrapper>
       <main>
@@ -47,7 +52,7 @@ export default function Home() {
           <h2>Songs List</h2>
           <div className="songslist-content">
             {state.category.length > 0 &&
-              state.category.map((item) => {
+              state.category.map((item: Item) => {
                 return (
                   <>
                     <Link href={`/category/${item.name}`}>

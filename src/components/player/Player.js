@@ -1,5 +1,12 @@
 'use client';
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
+} from 'react';
 // import { songs } from '../song/songs';
 import { AppContext } from '@/contexts/AppContext';
 // import { auth } from '../../firebase/firebase';
@@ -25,6 +32,12 @@ const Player = () => {
   var currentSong =
     state.songs.length > 0 ? state.songs[currentSongIndex] : null;
 
+  console.log(currentSong, '?:>::::::::::');
+
+  // const currentSong = useMemo(() => {
+  //   state.songs.length > 0 ? state.songs[currentSongIndex] : null;
+  // }, currentSong);
+
   const getSongsList = async () => {
     try {
       const data = await getDocs(songsCollectionRef);
@@ -43,7 +56,7 @@ const Player = () => {
   useEffect(() => {
     getSongsList();
   }, []);
-  console.log(state);
+
   // const currentSong = useState(songs[0]);
 
   const audioRef = useRef();
@@ -56,7 +69,7 @@ const Player = () => {
 
   // const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [currrentProgress, setCurrrentProgress] = React.useState(0);
+  const [currrentProgress, setCurrrentProgress] = useState(0);
 
   // const [progressSong, setProgresSong] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -129,37 +142,40 @@ const Player = () => {
   };
 
   // control songs progress bar width on mouse down
-  const handleMouseDown = (e) => {
-    var targetRef;
-    var progressWidth;
-    const progressBar = e.target;
-    const progressPosition = e.pageX - progressBar.offsetLeft;
-    if (
-      progressBar.classList.contains('songParent') ||
-      progressBar.classList.contains('songChild')
-    ) {
-      targetRef = rangeRef;
-    } else {
-      targetRef = volumeRangeRef;
-    }
-    setTargetRefEle(targetRef);
-    if (
-      progressBar.classList.contains('songParent') ||
-      progressBar.classList.contains('volumeParent')
-    ) {
-      progressWidth = progressBar.offsetWidth;
-    } else {
-      progressWidth = progressBar.parentElement.offsetWidth;
-    }
-    const progressPercent = (progressPosition / progressWidth) * 100;
-    if (targetRef == rangeRef) {
-      audioRef.current.currentTime = (duration * progressPercent) / 100;
-    } else {
-      audioRef.current.volume = progressPercent / 100;
-      targetRef.current.style.width = `${progressPercent}%`;
-    }
-    setIsMouseDown(true);
-  };
+  const handleMouseDown = useCallback(
+    (e) => {
+      var targetRef;
+      var progressWidth;
+      const progressBar = e.target;
+      const progressPosition = e.pageX - progressBar.offsetLeft;
+      if (
+        progressBar.classList.contains('songParent') ||
+        progressBar.classList.contains('songChild')
+      ) {
+        targetRef = rangeRef;
+      } else {
+        targetRef = volumeRangeRef;
+      }
+      setTargetRefEle(targetRef);
+      if (
+        progressBar.classList.contains('songParent') ||
+        progressBar.classList.contains('volumeParent')
+      ) {
+        progressWidth = progressBar.offsetWidth;
+      } else {
+        progressWidth = progressBar.parentElement.offsetWidth;
+      }
+      const progressPercent = (progressPosition / progressWidth) * 100;
+      if (targetRef == rangeRef) {
+        audioRef.current.currentTime = (duration * progressPercent) / 100;
+      } else {
+        audioRef.current.volume = progressPercent / 100;
+        targetRef.current.style.width = `${progressPercent}%`;
+      }
+      setIsMouseDown(true);
+    },
+    [isMouseDown]
+  );
 
   // handle mouse up
   const handleMouseUp = () => {
@@ -191,8 +207,7 @@ const Player = () => {
   };
 
   // toggle volume
-
-  const toggleVolume = () => {
+  const toggleVolume = useCallback(() => {
     setIsVolumeOn(!isVolumeOn);
     audioRef.current.muted = !audioRef.current.muted;
 
@@ -201,7 +216,7 @@ const Player = () => {
     } else {
       volumeRangeRef.current.style.width = `50%`;
     }
-  };
+  }, []);
 
   // Next Song
 

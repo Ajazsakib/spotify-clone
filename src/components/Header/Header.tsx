@@ -14,7 +14,7 @@ const Header = () => {
 
   const router = useRouter();
 
-  const dropdownRef = useRef(null);
+  const dropdownRef: React.RefObject<HTMLDivElement> = useRef(null);
 
   // const handleLogout = async () => {
   //   auth.signOut().then(() => {
@@ -31,7 +31,7 @@ const Header = () => {
     router.push('/login');
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: { target: any }) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setOpenDropdown(false);
     }
