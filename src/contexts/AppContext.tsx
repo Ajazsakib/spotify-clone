@@ -1,11 +1,33 @@
 'use client';
 import { createContext, useReducer } from 'react';
 
-export const AppContext = createContext();
+
+
+interface Songs {
+  id: string,
+  artist: string,
+  category_id: string,
+  created_by: string,
+  src: string,
+  title: string
+}
+
+interface Category {
+  id: string,
+  name: string,
+}
+
+interface InitialState {
+  songs: Songs[],
+  category: Category[]
+  currentSongIndex: number
+  isPlaying: boolean
+  isLoggedIn: boolean
+}
 
 const initialState = {
   songs: [],
-  artist: [],
+  // artist: [],
   category: [],
   currentSongIndex: 0,
   isPlaying: false,
@@ -13,7 +35,15 @@ const initialState = {
   currentUserLoggedIn: {},
 };
 
-const reducer = (state, action) => {
+export const AppContext = createContext<{
+  state: InitialState;
+  dispatch: React.Dispatch<any>;
+}>({
+  state: initialState,
+  dispatch: () => null,
+});
+
+const reducer = (state: InitialState, action: {type: string, payload: any}) => {
   switch (action.type) {
     case 'SET_SONGS':
       return {
@@ -51,7 +81,7 @@ const reducer = (state, action) => {
   }
 };
 
-export const AppProvider = ({ children }) => {
+export const AppProvider = ({ children }:{children:React.ReactNode}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
