@@ -1,6 +1,12 @@
 import React from 'react';
 
-const LibraryBox = (props) => {
+interface LibraryBoxProps {
+  title: string;
+  description: string;
+  action: string;
+}
+
+const LibraryBox = (props: LibraryBoxProps) => {
   return (
     <>
       <h5>{props.title}</h5>

@@ -123,7 +123,7 @@ const AdminPage = () => {
     const getSingleCategory: { name: string; id: string } =
       state?.category.find((item: { name: string }) => {
         return item.name == adminFormstate.category;
-      });
+      }) || { name: '', id: '' };
     setSelectedCategory(getSingleCategory);
   }, [adminFormstate.category]);
 

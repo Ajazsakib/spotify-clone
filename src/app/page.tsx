@@ -42,7 +42,7 @@ export default function Home() {
 
   interface Item {
     name: string;
-    id: number;
+    id: string;
   }
 
   return (

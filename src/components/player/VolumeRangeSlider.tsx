@@ -1,6 +1,13 @@
 import React from 'react';
 
-const VolumeRangeSlider = (props) => {
+interface VolumeRangeSliderProps {
+  toggleVolume: () => void;
+  isVolumeOn: boolean;
+  volumeRangeRef: React.RefObject<HTMLInputElement>;
+  handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+const VolumeRangeSlider = (props: VolumeRangeSliderProps) => {
   const { toggleVolume, isVolumeOn, volumeRangeRef, handleMouseDown } = props;
 
   console.log('volume Render');

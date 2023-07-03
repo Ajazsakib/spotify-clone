@@ -19,9 +19,15 @@ import db from '@/firebase/firebase';
 import Link from 'next/link';
 import validationSchema from './formValidationSchema';
 const RegistrationPage = () => {
-  const { globalState, dispatch } = useContext(AppContext);
+  // const { globalState, dispatch } = useContext(AppContext);
 
-  const [state, setState] = useState({
+  interface State {
+    name: string;
+    email: string;
+    password: string;
+  }
+
+  const [state, setState] = useState<State>({
     name: '',
     email: '',
     password: '',
@@ -47,7 +53,7 @@ const RegistrationPage = () => {
     message: string;
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (state: State) => {
     console.log(state.name, state.email, state.password);
     // await createUserWithEmailAndPassword(auth, state.email, state.password);
 

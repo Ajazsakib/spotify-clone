@@ -26,7 +26,7 @@ const index = ({ params }: Iprops) => {
   const getCategoryData = async () => {
     const categoryId = category.find((item: { name: string; id: string }) => {
       return item.name == params.name;
-    });
+    }) || { name: '', id: '' };
 
     console.log(categoryId, 'from parameter');
     const q = query(
@@ -98,7 +98,7 @@ const index = ({ params }: Iprops) => {
                             selectedSong(index);
                           }}
                         >
-                          {currentSongIndex == !index
+                          {currentSongIndex !== index
                             ? 'play_arrow'
                             : currentSongIndex == index && isPlaying
                             ? 'pause'
