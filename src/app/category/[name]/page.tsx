@@ -17,7 +17,7 @@ interface Iprops {
   params: { name: string };
 }
 
-const index = ({ params }: Iprops) => {
+const Index = ({ params }: Iprops) => {
   const { state, dispatch } = useContext(AppContext);
   const { category, currentSongIndex, isPlaying } = state;
   console.log(category);
@@ -129,4 +129,4 @@ const index = ({ params }: Iprops) => {
   );
 };
 
-export default index;
+export default Index;

@@ -9,7 +9,7 @@ const Song = ({ name }) => {
         <img src="images/song.jpg" />
       </div>
       <h4>{name}</h4>
-      <p>Get Jiggy with 90s 'dhinchak' beats. Cover Se</p>
+      <p>Get Jiggy with 90s dhinchak beats. Cover Se</p>
       <div className="player-icon">
         <span className="material-symbols-outlined">play_circle</span>
       </div>

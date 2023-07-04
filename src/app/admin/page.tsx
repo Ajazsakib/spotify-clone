@@ -15,7 +15,7 @@ import {
 import db from '@/firebase/firebase';
 import Link from 'next/link';
 
-const songsList = () => {
+const SongsList = () => {
   const { dispatch } = useContext(AppContext);
 
   const [songs, setSongs] = useState<FilteredData[]>([]);
@@ -112,4 +112,4 @@ const songsList = () => {
   );
 };
 
-export default songsList;
+export default SongsList;
