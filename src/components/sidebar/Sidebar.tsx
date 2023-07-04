@@ -10,7 +10,7 @@ const Sidebar = () => {
             <span className="material-symbols-outlined">home</span>
           </div>
           <div className="menu">
-            <Link href="/">Home</Link>
+            <Link href="/">Homesssssssss</Link>
           </div>
         </div>
         <div className="top-content">
