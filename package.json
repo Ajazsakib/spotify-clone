@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "build-staging":"env-cmd -f .env.staging.local next build",
-    "build-developemt":"env-cmd -f .env.development.local next build",
+    "build-developemt":"env-cmd -f .env.development next build",
     "build-production":"env-cmd -f .env.production.local next build",
     "staging": "env-cmd -f .env.staging.local next dev",
     "development": "env-cmd -f .env.development.local next dev",
