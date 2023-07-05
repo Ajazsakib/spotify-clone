@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "staging": "env-cmd -f .env.staging.local next dev",
+    "development": "env-cmd -f .env.development.local next dev",
+    "production": "env-cmd -f .env.production.local next start"
   },
   "dependencies": {
     "@types/node": "20.2.0",
@@ -14,6 +17,7 @@
     "@types/react-dom": "18.2.4",
     "axios": "^1.4.0",
     "encoding": "^0.1.13",
+    "env-cmd": "^10.1.0",
     "eslint": "8.40.0",
     "firebase": "^9.22.1",
     "next": "13.4.2",

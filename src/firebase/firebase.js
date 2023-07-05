@@ -6,13 +6,13 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBpr7Xr4yPgYeBaEzI_mxOt7ChmH6PwABE',
-  authDomain: 'spotify-clone-7f3d6.firebaseapp.com',
-  databaseURL: 'https://spotify-clone-7f3d6-default-rtdb.firebaseio.com',
-  projectId: 'spotify-clone-7f3d6',
-  storageBucket: 'spotify-clone-7f3d6.appspot.com',
-  messagingSenderId: '275147035366',
-  appId: '1:275147035366:web:12e29c10bbba819e3ce127',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
