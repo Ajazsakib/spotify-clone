@@ -1,28 +1,28 @@
 'use client';
 import { createContext, useReducer } from 'react';
 
-
-
 interface Songs {
-  id: string,
-  artist: string,
-  category_id: string,
-  created_by: string,
-  src: string,
-  title: string
+  id: string;
+  artist: string;
+  category_id: string;
+  created_by: string;
+  src: string;
+  title: string;
 }
 
 interface Category {
-  id: string,
-  name: string,
+  id: string;
+  name: string;
 }
 
 interface InitialState {
-  songs: Songs[],
-  category: Category[]
-  currentSongIndex: number
-  isPlaying: boolean
-  isLoggedIn: boolean
+  songs: Songs[];
+  category: Category[];
+  currentSongIndex: number;
+  isPlaying: boolean;
+  isLoggedIn: boolean;
+  loginPopup: boolean;
+  showLoader: boolean;
 }
 
 const initialState = {
@@ -33,6 +33,8 @@ const initialState = {
   isPlaying: false,
   isLoggedIn: false,
   currentUserLoggedIn: {},
+  loginPopup: false,
+  showLoader: false,
 };
 
 export const AppContext = createContext<{
@@ -43,7 +45,10 @@ export const AppContext = createContext<{
   dispatch: () => null,
 });
 
-const reducer = (state: InitialState, action: {type: string, payload: any}) => {
+const reducer = (
+  state: InitialState,
+  action: { type: string; payload: any }
+) => {
   switch (action.type) {
     case 'SET_SONGS':
       return {
@@ -75,13 +80,22 @@ const reducer = (state: InitialState, action: {type: string, payload: any}) => {
         ...state,
         currentUserLoggedIn: action.payload,
       };
-
+    case 'LOGIN_POPUP':
+      return {
+        ...state,
+        loginPopup: action.payload,
+      };
+    case 'SHOW_LOADER':
+      return {
+        ...state,
+        showLoader: action.payload,
+      };
     default:
       return state;
   }
 };
 
-export const AppProvider = ({ children }:{children:React.ReactNode}) => {
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (

@@ -10,8 +10,6 @@ interface VolumeRangeSliderProps {
 const VolumeRangeSlider = (props: VolumeRangeSliderProps) => {
   const { toggleVolume, isVolumeOn, volumeRangeRef, handleMouseDown } = props;
 
-  console.log('volume Render');
-
   return (
     <div className="right">
       <div className="icons">

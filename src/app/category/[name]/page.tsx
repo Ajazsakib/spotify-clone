@@ -19,8 +19,8 @@ interface Iprops {
 
 const Index = ({ params }: Iprops) => {
   const { state, dispatch } = useContext(AppContext);
-  const { category, currentSongIndex, isPlaying } = state;
-  console.log(category);
+  const { category, currentSongIndex, isPlaying, isLoggedIn } = state;
+
   var songsCategoryRef = collection(db, 'category');
 
   const getCategoryData = async () => {
@@ -45,15 +45,22 @@ const Index = ({ params }: Iprops) => {
   };
 
   useEffect(() => {
-    getCategoryData();
+    // getCategoryData();
   }, []);
 
   const selectedSong = (index: number) => {
-    dispatch({
-      type: 'PLAY_SONG',
-      payload: index,
-    });
-    dispatch({ type: 'IS_PLAYING', payload: !isPlaying });
+    if (isLoggedIn) {
+      dispatch({
+        type: 'PLAY_SONG',
+        payload: index,
+      });
+      dispatch({ type: 'IS_PLAYING', payload: !isPlaying });
+    } else {
+      dispatch({
+        type: 'LOGIN_POPUP',
+        payload: true,
+      });
+    }
   };
 
   return (
@@ -98,9 +105,11 @@ const Index = ({ params }: Iprops) => {
                             selectedSong(index);
                           }}
                         >
-                          {currentSongIndex !== index
+                          {isLoggedIn && currentSongIndex !== index
                             ? 'play_arrow'
-                            : currentSongIndex == index && isPlaying
+                            : isLoggedIn &&
+                              currentSongIndex == index &&
+                              isPlaying
                             ? 'pause'
                             : 'play_arrow'}
                         </span>

@@ -15,8 +15,6 @@ interface IProps {
 const CurrentSong = ({ currentSong }: IProps) => {
   const router = useRouter();
 
-  console.log('currentSong');
-
   return (
     <div className="left">
       <div className="img">

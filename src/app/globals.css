@@ -552,6 +552,51 @@ body {
     margin-left: 16px;
 }
 
+.login-popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+.login-popup .login-popup-box {
+    width: 60%;
+    height: 60%;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background-image: url('/images/song.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #ffffff;
+    position: relative;
+   
+}
+.login-popup .login-popup-box h1, .login-popup .login-popup-box .btn {
+    position: relative;
+    z-index: 21;
+}
+.login-popup .login-popup-box::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0, 0.6);
+    z-index: 20;
+}
+.login-popup .login-popup-box  a {
+    margin: 0 6px;
+}
 /* start css for register page*/
 .register-page-wrap {
     display: flex;
@@ -560,6 +605,11 @@ body {
 }
 .register-page  {
     text-align: center;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .register-page .heading {
     font-size: 24px;
@@ -587,12 +637,14 @@ body {
 .register-page  .form {
     display: flex;
     flex-direction: column;
+    width: 36%;
 }
 .register-page  .form .form-group {
     display: flex;
     flex-direction: column;
     text-align: left;
     margin-bottom: 16px;
+    
 }
 .register-page  .form .form-group label {
     margin-bottom: 6px;
@@ -611,5 +663,10 @@ body {
     justify-content: center;
     font-size: 16px;
     height: 50px;
+}
+.loader {
+    width: 30px;
+    height: 30px;
+    margin: 6px auto
 }
 /* End css for register page*/

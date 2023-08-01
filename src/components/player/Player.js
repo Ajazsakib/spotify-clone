@@ -7,9 +7,8 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-// import { songs } from '../song/songs';
+
 import { AppContext } from '@/contexts/AppContext';
-// import { auth } from '../../firebase/firebase';
 
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import db from '../../firebase/firebase';
@@ -27,16 +26,17 @@ const Player = () => {
 
   const songsCollectionRef = collection(db, 'songs');
 
-  // const [songs, setSongs] = useState([]);
-  // const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  var currentPlayingCategory =
+    state.songs.length > 0
+      ? state.songs.filter((song) => {
+          return song.category_id === state.category[0].id;
+        })
+      : null;
+
   var currentSong =
-    state.songs.length > 0 ? state.songs[currentSongIndex] : null;
-
-  console.log(currentSong, '?:>::::::::::');
-
-  // const currentSong = useMemo(() => {
-  //   state.songs.length > 0 ? state.songs[currentSongIndex] : null;
-  // }, currentSong);
+    currentPlayingCategory && currentPlayingCategory.length > 0
+      ? currentPlayingCategory[currentSongIndex]
+      : null;
 
   const getSongsList = async () => {
     try {
@@ -48,16 +48,12 @@ const Player = () => {
 
       dispatch({ type: 'SET_SONGS', payload: filteredData });
       dispatch({ type: 'PLAY_SONG', payload: 0 });
-    } catch (err) {
-      console.log('Error', err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
     getSongsList();
   }, []);
-
-  // const currentSong = useState(songs[0]);
 
   const audioRef = useRef();
 
@@ -67,11 +63,9 @@ const Player = () => {
 
   const [targetRefEle, setTargetRefEle] = useState(null);
 
-  // const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currrentProgress, setCurrrentProgress] = useState(0);
 
-  // const [progressSong, setProgresSong] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isVolumeOn, setIsVolumeOn] = useState(true);
 
@@ -80,10 +74,8 @@ const Player = () => {
   // function for play and pause
   const togglePlayPause = () => {
     if (isPlaying) {
-      // audioRef.current.pause();
       dispatch({ type: 'IS_PLAYING', payload: !isPlaying });
     } else {
-      // audioRef.current.play();
       dispatch({ type: 'IS_PLAYING', payload: !isPlaying });
     }
   };
@@ -94,7 +86,7 @@ const Player = () => {
     } else {
       audioRef?.current?.play();
     }
-  }, [isPlaying]);
+  }, [isPlaying, songs]);
 
   // function for show elapsed time and duration
   function formatDurationDisplay(duration) {
@@ -186,7 +178,6 @@ const Player = () => {
 
   const handleMouseMove = (e) => {
     if (isMouseDown) {
-      console.log(targetRefEle);
       const p = e.pageX - targetRefEle.current.parentElement.offsetLeft;
 
       const q = targetRefEle.current.parentElement.offsetWidth;
@@ -201,8 +192,6 @@ const Player = () => {
         targetRefEle.current.style.width = `${r}%`;
         audioRef.current.volume = r / 100;
       }
-
-      // setProgresSong(r);
     }
   };
 
@@ -216,7 +205,7 @@ const Player = () => {
     } else {
       volumeRangeRef.current.style.width = `50%`;
     }
-  }, []);
+  }, [isVolumeOn]);
 
   // Next Song
 
@@ -237,6 +226,15 @@ const Player = () => {
     }
   }, [currentSongIndex]);
 
+  useEffect(() => {
+    if (currentSong) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.pause();
+      audioRef.current.volume = 0.1;
+      volumeRangeRef.current.style.width = `10%`;
+    }
+  }, []);
+
   // last song
 
   const backwardLastSong = () => {
@@ -246,6 +244,8 @@ const Player = () => {
       dispatch({ type: 'PLAY_SONG', payload: currentSongIndex - 1 });
     }
   };
+
+  console.log('rendered');
 
   return (
     currentSong && (

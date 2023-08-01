@@ -16,11 +16,15 @@ import {
 import db from '@/firebase/firebase';
 import Link from 'next/link';
 import loginValidationSchema from './formValidationSchema';
+import { checkEmailExist } from '@/util/helperFunction';
+import Loader from '@/components/loader/Loader';
 const LoginPage = () => {
-  const [state, setState] = useState({
+  const [formState, setFormState] = useState({
     email: '',
     password: '',
   });
+
+  const [loading, setLoading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<{
     [key: string]: string | undefined;
@@ -29,15 +33,49 @@ const LoginPage = () => {
     password?: string | undefined;
   }>({});
 
-  const { dispatch } = useContext(AppContext);
+  // validation function
+  const [onChangeValidation, setOnChangeValidation] = useState(false);
+  const validationFnction = async (callback) => {
+    try {
+      await callback();
+      // setOnChangeValidation(false);
+    } catch (errors: any) {
+      // Validation failed, handle the errors
+      setOnChangeValidation(true);
+      const errorMessages: {
+        email?: string;
+        password?: string;
+        [key: string]: string | undefined;
+      } = {};
+      errors.inner.forEach(
+        (error: { path: string | number; message: string }) => {
+          errorMessages[error.path] = error.message;
+        }
+      );
+      setErrorMessage(errorMessages);
+      console.log('Form validation errors:', errorMessages);
+    }
+  };
+
+  const { state, dispatch } = useContext(AppContext);
 
   const router = useRouter();
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
-    setState((prevState) => ({
-      ...prevState,
+    const newState = {
+      ...formState,
       [e.target.name]: e.target.value,
-    }));
+    };
+    setFormState(newState);
+    if (onChangeValidation) {
+      validationFnction(async () => {
+        await loginValidationSchema.validate(newState, { abortEarly: false });
+        setErrorMessage({
+          email: '',
+          password: '',
+        });
+      });
+    }
   };
 
   // const handleSubmit = async () => {
@@ -71,54 +109,32 @@ const LoginPage = () => {
 
   const handleSubmit = async () => {
     // login for validation
-    try {
-      await loginValidationSchema.validate(state, { abortEarly: false });
+    validationFnction(async () => {
+      await loginValidationSchema.validate(formState, { abortEarly: false });
       // Validation passed, continue with form submission
-      console.log('Form submitted successfully!', state);
+      // setLoading(true);
+      dispatch({ type: 'SHOW_LOADER', payload: true });
+      const userObj: User = await checkEmailExist(formState.email);
+      console.log(userObj, 'user>>>>>>>>>>>>>>>>>>>');
 
-      const q = query(
-        collection(db, 'users'),
-        where('email', '==', state.email)
-      );
-
-      await getDocs(q).then((querySnapshot) => {
-        const user = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-
-        const userObj: User =
-          user.find((item: User) => {
-            return item.email == state.email;
-          }) || {};
-
-        console.log(userObj);
-
-        if (userObj.email == state.email) {
-          dispatch({ type: 'IS_LOGGED_IN', payload: true });
-          localStorage.setItem('username', JSON.stringify(userObj));
-          if (userObj.isAdmin == true) {
-            router.push('/admin');
-          } else {
-            router.push('/');
-          }
+      if (
+        userObj.email == formState.email &&
+        userObj.password == formState.password
+      ) {
+        dispatch({ type: 'IS_LOGGED_IN', payload: true });
+        localStorage.setItem('username', JSON.stringify(userObj));
+        if (userObj.isAdmin == true) {
+          router.push('/admin');
+        } else {
+          router.push('/');
         }
-      });
-    } catch (errors: any) {
-      // Validation failed, handle the errors
-      const errorMessages: {
-        email?: string;
-        password?: string;
-        [key: string]: string | undefined;
-      } = {};
-      errors.inner.forEach(
-        (error: { path: string | number; message: string }) => {
-          errorMessages[error.path] = error.message;
-        }
-      );
-      setErrorMessage(errorMessages);
-      console.log('Form validation errors:', errorMessages);
-    }
+        console.log(loading, 'lodddddddddddddddddddddd');
+      } else {
+        alert("Email Does'nt exist or incorrect password");
+      }
+      // setLoading(false);
+      dispatch({ type: 'SHOW_LOADER', payload: false });
+    });
   };
 
   const signInWithGoogle = async () => {
@@ -137,14 +153,14 @@ const LoginPage = () => {
     <div className="register-page-wrap">
       <div className="register-page">
         <div className="heading">
-          <h3>Login To Your Music App</h3>
+          <h3>Login </h3>
         </div>
-        <div className="signup-with-google">
+        {/* <div className="signup-with-google">
           <button className="btn btn-google-signup" onClick={signInWithGoogle}>
             <img src="images/google.png" />
             Sign Up With Google
           </button>
-        </div>
+        </div> */}
         <div className="form">
           <div className="form-group">
             <label>Email</label>
@@ -167,11 +183,18 @@ const LoginPage = () => {
             {errorMessage?.password && <p>{errorMessage.password}</p>}
           </div>
           <div className="form-group">
-            <input
+            {/* <input
               type="submit"
               className="btn btn-secondary"
               onClick={handleSubmit}
-            />
+            /> */}
+            <button
+              type="submit"
+              className="btn btn-secondary"
+              onClick={handleSubmit}
+            >
+              {state.showLoader ? <Loader /> : 'Submit'}
+            </button>
           </div>
           <div className="form-group">
             <Link href="/register" className="btn btn-secondary">

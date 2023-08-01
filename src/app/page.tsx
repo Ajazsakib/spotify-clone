@@ -56,7 +56,7 @@ export default function Home() {
                 return (
                   <>
                     <Link href={`/category/${item.name}`}>
-                      <Song key={item.id} name={item.name} />
+                      <Song key={item.id} name={item.name} itemId={item.id} />
                     </Link>
                   </>
                 );
